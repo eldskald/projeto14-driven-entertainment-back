@@ -1,5 +1,4 @@
 import joi from "joi";
-import { db } from "../db.js";
 
 const signupPoductsSchema = joi.object({
   name: joi.string().required(),
@@ -47,10 +46,7 @@ const productReleaseDateSchema = joi.object({
   releaseDate: joi.string().required(),
 });
 
-//funçaõ assincrona pra validar e mandar pro banco de dados
-
 export function productValidation(req, res, next) {
-  // const product = req.body;
   const {
     name,
     price,
