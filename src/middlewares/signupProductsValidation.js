@@ -1,16 +1,16 @@
 import joi from "joi";
 
-const signupPoductsSchema = joi.object({
-  name: joi.string().required(),
-  price: joi.number().required(),
-  description: joi.string(),
-  rating: joi.number().required(),
-  image: joi.string().required(),
-  category: joi.string().required(),
-  subcategory: joi.array().required(),
-  producer: joi.string().required(),
-  releaseDate: joi.string().required(),
-});
+// const signupPoductsSchema = joi.object({
+//   name: joi.string().required(),
+//   price: joi.number().required(),
+//   description: joi.string(),
+//   rating: joi.number().required(),
+//   image: joi.string().required(),
+//   category: joi.string().required(),
+//   subcategory: joi.array().required(),
+//   producer: joi.string().required(),
+//   releaseDate: joi.string().required(),
+// });
 
 const productNameSchema = joi.object({
   name: joi.string().required(),
