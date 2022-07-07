@@ -14,7 +14,7 @@ async function createToken(_req, res, next) {
         const token = jwt.sign(
             { sessionId: session._id },
             JWT_SECRET,
-            { expiresIn: 60 * 60 * 30 }
+            { expiresIn: 60 * 60 * 24 * 30 }
         );
         
         res.locals.token = token;

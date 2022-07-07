@@ -24,7 +24,7 @@ async function tokenValidation (req, res, next) {
             return res.sendStatus(401);
         }
 
-        const user = await db.accounts.findOne({ _id: session.userId });
+        const user = await db.users.findOne({ _id: session.userId });
         if (!user) {
             return res.sendStatus(401);
         }
