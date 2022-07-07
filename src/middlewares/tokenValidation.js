@@ -8,10 +8,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 async function tokenValidation (req, res, next) {
     try {
+        const limit = parseInt(req.query.limit);
+        if(!isNaN(limit)) res.locals.limit=limit;
+
         const { authorization } = req.headers;
-        if (authorization === '') {
+        if (authorization === undefined) {
             res.locals.user = {};
-            next();
+            return next();
         }
 
         const token = authorization?.replace('Bearer ', '');
@@ -31,7 +34,7 @@ async function tokenValidation (req, res, next) {
 
     } catch (err) {
         console.log(err);
-        return res.sendStatus(401);
+        return res.sendStatus(500);
     }
 }
 
