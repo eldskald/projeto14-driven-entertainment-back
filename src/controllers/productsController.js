@@ -1,7 +1,6 @@
 import { db } from "../db.js";
-import { ObjectId } from "mongodb";
 
-export async function getProducts( req, res, next ){
+export async function getProducts(req, res){
     const user=res.locals.user;
     const limit = parseInt(req.query.limit);
     
@@ -25,14 +24,39 @@ export async function getProducts( req, res, next ){
             }
         }
         
-    }catch(err){
+    } catch(err) {
         console.log(err);
         res.sendStatus(500);
     }
-   
 }
 
-export async function getProduct(req, res, next){
+export async function updateCart(_req, res) {
+    try {
+        const user = res.locals.user;
+        if (Object.keys(user).length === 0) {
+            return res.sendStatus(200);
+        }
+
+        const cart = res.locals.cart;
+        await db.users.updateOne(
+            {
+                _id: user._id
+            },
+            { $set: {
+                ...user,
+                cart
+            }}
+        );
+
+        return res.sendStatus(200);
+
+    } catch(err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+}
+
+export async function getProduct(_req, res){
     const product=res.locals.product;
     try{
         return res.status(200).send(product);
@@ -40,6 +64,4 @@ export async function getProduct(req, res, next){
         console.error(error);
         return res.sendStatus(500);
     }
-
-    
 }

@@ -8,7 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 async function tokenValidation (req, res, next) {
     try {
-
         const { authorization } = req.headers;
         if (authorization === undefined) {
             res.locals.user = {};
