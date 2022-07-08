@@ -1,49 +1,47 @@
-import joi from 'joi';
-import bcrypt from 'bcrypt';
-import { db } from '../db.js';
+import joi from "joi";
+import bcrypt from "bcrypt";
+import db from "../db.js";
 
 const loginSchema = joi.object({
-    email: joi.required(),
-    password: joi.required(),
+  email: joi.required(),
+  password: joi.required(),
 });
 
 async function loginValidation(req, res, next) {
-    try {
-        const body = req.body;
+  try {
+    const body = req.body;
 
-        const {error} = loginSchema.validate(body);
-        if (error) {
-            const errorMessages=error.details.map(item=>item.message);
-            let message='';
-            errorMessages.forEach(err=>{
-                if((/\"email\" is required/).test(err)){
-                    return message+='Email field is required!\n';
-                }
-                if((/\"password\" is required/).test(err)){
-                    return message+='Password field is required!\n';
-                }
-            });
-            return res.status(422).send(message);
+    const { error } = loginSchema.validate(body);
+    if (error) {
+      const errorMessages = error.details.map((item) => item.message);
+      let message = "";
+      errorMessages.forEach((err) => {
+        if (/\"email\" is required/.test(err)) {
+          return (message += "Email field is required!\n");
         }
-        
-
-        const user = await db.users.findOne({ email: body.email });
-        if (!user) {
-            return res.status(401).send('Invalid email or password.');
+        if (/\"password\" is required/.test(err)) {
+          return (message += "Password field is required!\n");
         }
-
-        const hashCheck = await bcrypt.compare(body.password, user.passwordHash);
-        if (!hashCheck) {
-            return res.status(401).send('Invalid email or password.');
-        }
-
-        res.locals.user = user;
-        next();
-
-    } catch (err) {
-        console.log(err);
-        return res.sendStatus(500);
+      });
+      return res.status(422).send(message);
     }
+
+    const user = await db.users.findOne({ email: body.email });
+    if (!user) {
+      return res.status(401).send("Invalid email or password.");
+    }
+
+    const hashCheck = await bcrypt.compare(body.password, user.passwordHash);
+    if (!hashCheck) {
+      return res.status(401).send("Invalid email or password.");
+    }
+
+    res.locals.user = user;
+    next();
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
 }
 
 export default loginValidation;

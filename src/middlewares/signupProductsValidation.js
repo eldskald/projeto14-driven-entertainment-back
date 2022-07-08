@@ -1,4 +1,5 @@
 import joi from "joi";
+import categoryList from "./categorySignupProducts.js";
 
 // const signupPoductsSchema = joi.object({
 //   name: joi.string().required(),
@@ -12,6 +13,10 @@ import joi from "joi";
 //   releaseDate: joi.string().required(),
 // });
 
+const categoryNames = categoryList.map((category) => {
+  return category.name;
+});
+
 const productNameSchema = joi.object({
   name: joi.string().required(),
 });
@@ -23,6 +28,13 @@ const productDescriptionSchema = joi.object({
   description: joi.string().required(),
 });
 
+const productCategorySchema = joi.object({
+  category: joi
+    .string()
+    .valid(...categoryNames)
+    .required(),
+});
+
 const productRatingSchema = joi.object({
   rating: joi.string().required(),
 });
@@ -32,10 +44,7 @@ const productImageSchema = joi.object({
 
 const productSubcategorySchema = joi.object({
   subcategory: joi.array().required(),
-});
-
-const productCategorySchema = joi.object({
-  category: joi.string().required(),
+  //entrar na categoria e verificar se existe na subcategoria dessa categoria
 });
 
 const productProducerSchema = joi.object({
@@ -104,7 +113,7 @@ export function productValidation(req, res, next) {
       "error to signup category",
       productCategoryValidate.error.details
     );
-    return res.status(400).send("invalid category");
+    return res.status(400).send(categoryNames);
   }
 
   if (productSubcategoryValidate.error) {
