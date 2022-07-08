@@ -8,8 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 async function tokenValidation (req, res, next) {
     try {
-        const limit = parseInt(req.query.limit);
-        if(!isNaN(limit)) res.locals.limit=limit;
 
         const { authorization } = req.headers;
         if (authorization === undefined) {

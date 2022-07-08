@@ -1,8 +1,9 @@
 import { db } from "../db.js";
+import { ObjectId } from "mongodb";
 
 export async function getProducts( req, res, next ){
     const user=res.locals.user;
-    const limit=res.locals.limit;
+    const limit = parseInt(req.query.limit);
     
     try{
         const allProducts = await db.products.find({}).toArray();
@@ -29,4 +30,16 @@ export async function getProducts( req, res, next ){
         res.sendStatus(500);
     }
    
+}
+
+export async function getProduct(req, res, next){
+    const product=res.locals.product;
+    try{
+        return res.status(200).send(product);
+    }catch(error){
+        console.error(error);
+        return res.sendStatus(500);
+    }
+
+    
 }
