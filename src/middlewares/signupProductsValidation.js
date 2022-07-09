@@ -1,4 +1,5 @@
 import joi from "joi";
+import { db } from "../db.js";
 
 // const signupPoductsSchema = joi.object({
 //   name: joi.string().required(),
@@ -24,7 +25,7 @@ const productDescriptionSchema = joi.object({
 });
 
 const productRatingSchema = joi.object({
-  rating: joi.string().required(),
+  rating: joi.number().required(),
 });
 const productImageSchema = joi.object({
   image: joi.string().required(),
@@ -76,7 +77,7 @@ export function productValidation(req, res, next) {
   });
 
   if (productNameValidate.error) {
-    console.log("errot to signup name", productNameValidate.error.details);
+    console.log("error to signup name", productNameValidate.error.details);
     return res.status(400).send("invalid name");
   }
 
@@ -133,3 +134,50 @@ export function productValidation(req, res, next) {
 
   next();
 }
+
+export async function verifyCategory(req,res,next){
+  const {category}=req.body;
+
+  try{
+    const categoryExist=await db.categories.findOne({category});
+    if(!categoryExist){
+    
+    await db.categories.insertOne({category});
+    const newCategory=await db.categories.findOne({category});
+    res.locals._idCategory=newCategory._id;
+    return next();
+  }
+    res.locals._idCategory=categoryExist._id;
+    return next();
+  }catch(error){
+    console.error(error);
+    return res.sendStatus(500);
+  }
+  
+}
+
+export async function verifySubCategory(req,res,next){
+  const {subcategory}=req.body;
+
+  try{
+    const newSubCategoryArray=[];
+    subcategory.forEach(async element => { 
+      const subCategoryExist=await db.subcategories.findOne({subcategory:element});
+      
+      if(!subCategoryExist){
+        await db.subcategories.insertOne({subcategory:element});
+        const newSubCategory=await db.categories.findOne({subcategory});
+        return newSubCategoryArray.push(newSubCategory._id);
+      }
+        return newSubCategoryArray.push(subCategoryExist._id);
+    });
+    res.locals._idSubCategory=newSubCategoryArray;
+    return next();
+  }catch(error){
+    console.error(error);
+    return res.sendStatus(500);
+  }
+  
+}
+
+

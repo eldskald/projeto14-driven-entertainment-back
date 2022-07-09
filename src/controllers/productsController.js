@@ -56,7 +56,7 @@ export async function updateCart(_req, res) {
     }
 }
 
-export async function getProduct(_req, res){
+export async function getProduct(req, res){
     const product=res.locals.product;
     try{
         return res.status(200).send(product);
@@ -64,4 +64,9 @@ export async function getProduct(_req, res){
         console.error(error);
         return res.sendStatus(500);
     }
-}
+};
+
+// export async function getCategory(req,res){
+//     const category=res.locals.category;
+
+// }

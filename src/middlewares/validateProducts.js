@@ -1,7 +1,7 @@
 import { db } from "../db.js";
 import { ObjectId } from "mongodb";
 
-export default async function validateObjectId(req,res,next){
+export async function validateObjectId(req,res,next){
     const _id=req.params.id;
 
     if(ObjectId.isValid(_id)){
@@ -16,4 +16,15 @@ export default async function validateObjectId(req,res,next){
         return res.status(422).send('The parameter must be a valid _id/ObjectId!');
     }
     return res.status(422).send('The parameter must be a valid _id/ObjectId!');
+}
+
+export async function validateCategory(req,res,next){
+    const category=req.params.category;
+
+    if(category!== 'Movie' && category!=='Video Game'){
+        return res.status(404).send(`${category} category doens't exists! Try 'Movie' or 'Video Game'`);
+    }
+
+    res.locals.category=category;
+    return next();
 }

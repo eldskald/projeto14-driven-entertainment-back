@@ -16,7 +16,8 @@ export async function connectDatabase () {
             users: database.collection('users'),
             sessions: database.collection('sessions'),
             products: database.collection('products'),
-            categories: database.collection('categories')
+            categories: database.collection('categories'),
+            subcategories :database.collection('subcategories')
         };
     } catch (err) {
         console.log(err);
