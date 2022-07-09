@@ -157,7 +157,7 @@ export async function verifyCategory(req,res,next){
 }
 
 export async function verifySubCategory(req,res,next){
-  
+  const _idCategory=res.locals._idCategory;
   try{
     const {subcategory}= await req.body;
     const newSubCategoryArray=[];
@@ -166,7 +166,7 @@ export async function verifySubCategory(req,res,next){
     for (const element of subcategory){
       const subCategoryExist=await db.subcategories.findOne({subcategory:element});
       if(!subCategoryExist){
-        const {insertedId}=await db.subcategories.insertOne({subcategory:element});
+        const {insertedId}=await db.subcategories.insertOne({subcategory:element, _idCategory:_idCategory});
         newSubCategoryArray.push(insertedId);
       }else{
         newSubCategoryArray.push(subCategoryExist._id);

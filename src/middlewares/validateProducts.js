@@ -22,7 +22,7 @@ export async function validateCategory(req,res,next){
     const category=req.params.category;
 
     if(category!== 'Movie' && category!=='Video Game'){
-        return res.status(404).send(`${category} category doens't exists! Try 'Movie' or 'Video Game'`);
+        return res.status(404).send(`${category} category doesn't exist! Try 'Movie' or 'Video Game'`);
     }
 
     const categoryExist=await db.categories.findOne({category});
@@ -32,5 +32,20 @@ export async function validateCategory(req,res,next){
     }
     
     res.locals._idCategory=categoryExist._id;
+    return next();
+}
+
+export async function validateSubCategory(req,res,next){
+    const subcategory=req.params.subcategory;
+    const _idCategory=res.locals._idCategory;
+
+    const subCategoryExist= await db.subcategories.findOne({subcategory}, _idCategory);
+    
+
+    if(!subCategoryExist){
+        return res.status(404).send(`${subcategory} subcategory doesn't exist in this category!`)
+    }
+
+    res.locals.subCategory=subCategoryExist;
     return next();
 }

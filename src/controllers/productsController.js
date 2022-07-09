@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import { ObjectId } from "mongodb";
 
 export async function getProducts(req, res){
     const user=res.locals.user;
@@ -78,6 +79,28 @@ export async function getCategory(req,res){
         console.error(error);
         res.sendStatus(500);
     }
-    
+}
 
+export async function getSubCategory(req,res){
+    const subCategory =res.locals.subCategory;
+    const _idCategory=res.locals._idCategory;
+    const _id=subCategory._id;
+    try{
+        const products=await db.products.find(
+            {
+                _idCategory,
+                _idSubCategory:
+                    {$elemMatch:
+                        { $eq:new ObjectId(_id)
+                        }
+                    }
+            }).toArray();
+        if(products.length===0 || !products){
+            return res.status(404).send(`${subCategory.subcategory} subcategory doesn't exist in this category!`)
+        }
+        return res.status(200).send(products);
+    }catch(error){
+        console.error(error);
+        res.sendStatus(500);
+    }
 }
