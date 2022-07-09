@@ -17,7 +17,7 @@ export async function getProducts(req, res){
         }else{
             // for a while, that we are not setting user related products, it will be the same code;
             
-            if(limit && limit<=allProducts.length){
+            if(limit && limit<=allProducts.length) {
                 const products= await db.products.aggregate([{ $sample: { size: limit } }]).toArray();
                 return res.status(200).send(products);
             }else{
@@ -31,33 +31,7 @@ export async function getProducts(req, res){
     }
 }
 
-export async function updateCart(_req, res) {
-    try {
-        const user = res.locals.user;
-        if (Object.keys(user).length === 0) {
-            return res.sendStatus(200);
-        }
-
-        const cart = res.locals.cart;
-        await db.users.updateOne(
-            {
-                _id: user._id
-            },
-            { $set: {
-                ...user,
-                cart
-            }}
-        );
-
-        return res.sendStatus(200);
-
-    } catch(err) {
-        console.log(err);
-        res.sendStatus(500);
-    }
-}
-
-export async function getProduct(req, res){
+export async function getProduct(_req, res) {
     const product=res.locals.product;
     try{
         return res.status(200).send(product);
@@ -67,11 +41,11 @@ export async function getProduct(req, res){
     }
 };
 
-export async function getCategory(req,res){
+export async function getCategory(_req, res) {
     const _idCategory=res.locals._idCategory;
     try{
         const products=await db.products.find({_idCategory}).toArray();
-        if(products.length===0 || !products){
+        if(products.length===0 || !products) {
             return res.sendStatus(204);
         }
         
@@ -94,7 +68,7 @@ export async function getCategory(req,res){
     }
 }
 
-export async function getSubCategory(req,res){
+export async function getSubCategory(_req, res) {
     const subCategory =res.locals.subCategory;
     const _idCategory=res.locals._idCategory;
     const _id=subCategory._id;
