@@ -157,22 +157,25 @@ export async function verifyCategory(req,res,next){
 }
 
 export async function verifySubCategory(req,res,next){
-  const {subcategory}=req.body;
-
+  
   try{
+    const {subcategory}= await req.body;
     const newSubCategoryArray=[];
-    subcategory.forEach(async element => { 
+     
+
+    for (const element of subcategory){
       const subCategoryExist=await db.subcategories.findOne({subcategory:element});
-      
       if(!subCategoryExist){
-        await db.subcategories.insertOne({subcategory:element});
-        const newSubCategory=await db.categories.findOne({subcategory});
-        return newSubCategoryArray.push(newSubCategory._id);
-      }
-        return newSubCategoryArray.push(subCategoryExist._id);
-    });
-    res.locals._idSubCategory=newSubCategoryArray;
-    return next();
+        const {insertedId}=await db.subcategories.insertOne({subcategory:element});
+        newSubCategoryArray.push(insertedId);
+      }else{
+        newSubCategoryArray.push(subCategoryExist._id);
+      }  
+    }
+     
+    res.locals._idSubCategory= newSubCategoryArray;
+    
+    return await next();
   }catch(error){
     console.error(error);
     return res.sendStatus(500);

@@ -66,7 +66,18 @@ export async function getProduct(req, res){
     }
 };
 
-// export async function getCategory(req,res){
-//     const category=res.locals.category;
+export async function getCategory(req,res){
+    const _idCategory=res.locals._idCategory;
+    try{
+        const products=await db.products.find({_idCategory}).toArray();
+        if(products.length===0 || !products){
+            return res.sendStatus(204);
+        }
+        return res.status(200).send(products);
+    }catch(error){
+        console.error(error);
+        res.sendStatus(500);
+    }
+    
 
-// }
+}

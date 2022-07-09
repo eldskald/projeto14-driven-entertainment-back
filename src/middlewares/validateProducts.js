@@ -25,6 +25,12 @@ export async function validateCategory(req,res,next){
         return res.status(404).send(`${category} category doens't exists! Try 'Movie' or 'Video Game'`);
     }
 
-    res.locals.category=category;
+    const categoryExist=await db.categories.findOne({category});
+    
+    if(!categoryExist){
+        return res.status(204).send(`${category} category is empty!`);
+    }
+    
+    res.locals._idCategory=categoryExist._id;
     return next();
 }
