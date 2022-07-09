@@ -74,6 +74,19 @@ export async function getCategory(req,res){
         if(products.length===0 || !products){
             return res.sendStatus(204);
         }
+        
+        for( const prod of products){
+            delete prod._idCategory;
+            prod.category=req.params.category;
+            const subCategoryArray=[];            
+            for (const sub of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
+        
         return res.status(200).send(products);
     }catch(error){
         console.error(error);
@@ -96,8 +109,21 @@ export async function getSubCategory(req,res){
                     }
             }).toArray();
         if(products.length===0 || !products){
-            return res.status(404).send(`${subCategory.subcategory} subcategory doesn't exist in this category!`)
+            return res.status(404).send(`${subCategory.subcategory} subcategory doesn't exist in this category!`);
         }
+
+        for( const prod of products){
+            delete prod._idCategory;
+            prod.category=req.params.category;
+            const subCategoryArray=[];            
+            for (const sub of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
+
         return res.status(200).send(products);
     }catch(error){
         console.error(error);
