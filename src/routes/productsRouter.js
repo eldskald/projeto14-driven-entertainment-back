@@ -1,10 +1,10 @@
 import { Router } from "express";
-import tokenValidation from "../middlewares/tokenValidation.js";
 import {validateCategory, validateSubCategory, validateSubCategories, validateObjectId, validateNameProduct} from "../middlewares/validateProducts.js";
-import { getProductsNewReleases, getProduct, getCategory, getSubCategory, getCategories, getSubcategories } from "../controllers/productsController.js";
+import { getProductsNewReleases, getProductsTopRated, getProduct, getCategory, getSubCategory, getCategories, getSubcategories } from "../controllers/productsController.js";
 
 const router = Router();  
-router.get('/productsNewReleases',tokenValidation, getProductsNewReleases);
+router.get('/productsNewReleases', getProductsNewReleases);
+router.get('/productsTopRated', getProductsTopRated);
 router.get('/products/:category', validateCategory, getCategory);
 router.get('/categories', getCategories);
 router.get('/products/:category/:subcategory',validateCategory,validateSubCategory,getSubCategory);
