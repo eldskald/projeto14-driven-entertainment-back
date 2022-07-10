@@ -38,7 +38,6 @@ async function getNameMonth(string){
 }
 
 export async function getProductsNewReleases(req, res){
-    // const user=res.locals.user;
     let limit = parseInt(req.query.limit);
     
     try{
@@ -47,6 +46,41 @@ export async function getProductsNewReleases(req, res){
         const options={
             limit,
             sort:{releaseDate:-1},
+        }
+        const products= await db.products.find(query,options).toArray();
+
+        for (const prod of products){
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
+            const category=await db.categories.findOne({_id:new ObjectId(prod._idCategory)});
+            prod.category=category.category;
+            delete prod._idCategory;
+            const subCategoryArray=[];            
+            for (const id of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(id)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
+
+        return res.status(200).send(products);
+    }catch(error){
+        console.error(error);
+        return res.sendStatus(500);
+    }
+}
+
+export async function getProductsTopRated(req, res){
+    let limit = parseInt(req.query.limit);
+    
+    try{
+        if(!limit) limit=(await db.products.find({}).toArray()).length;
+        const query={};
+        const options={
+            limit,
+            sort:{rating:-1},
         }
         const products= await db.products.find(query,options).toArray();
 
