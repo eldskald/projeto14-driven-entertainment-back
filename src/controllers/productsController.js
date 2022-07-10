@@ -133,6 +133,20 @@ export async function getCategory(req, res) {
     }
 }
 
+export async function getCategories(_,res){
+    try{
+        const categoriesArray= await db.categories.find({}).toArray();
+        const categoriesName=[];
+        for (const category of categoriesArray){
+            categoriesName.push(category.category);
+        }
+        return res.status(200).send(categoriesName);
+    }catch(error){
+        console.error(error);
+        return res.status(500).send(error);
+    };
+};
+
 export async function getSubCategory(req, res) {
     const subCategory =res.locals.subCategory;
     const _idCategory=res.locals._idCategory;
