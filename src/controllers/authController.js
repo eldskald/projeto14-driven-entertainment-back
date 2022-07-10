@@ -36,7 +36,9 @@ export async function signup(req, res) {
         await db.users.insertOne({
             name: body.name,
             email: body.email,
-            passwordHash
+            passwordHash,
+            cart: [],
+            library: []
         });
         return res.sendStatus(201);
 
