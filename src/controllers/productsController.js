@@ -1,9 +1,43 @@
 import { db } from "../db.js";
 import { ObjectId } from "mongodb";
-import dayjs from "dayjs";
+
+async function getNameMonth(string){
+    switch (string) {
+        case '01':
+            return 'Jan';
+            
+        case '02':
+            return 'Feb';
+            
+        case '03':
+            return 'Mar';
+            
+        case '04':
+            return 'Apr';
+            
+        case '05':
+            return'May';
+        case '06':
+            return 'Jun';
+        case '07':
+            return 'Jul';
+        case '08':
+            return'Aug';
+        case '09':
+            return 'Sep';
+        case '10':
+            return'Oct';
+
+        case '11':
+            return 'Nov';
+        case '12':
+            return 'Dec';
+        default:
+            console.log(`error on date`);
+    }
+}
 
 export async function getProductsNewReleases(req, res){
-    dayjs.locale('pt-br');
     // const user=res.locals.user;
     let limit = parseInt(req.query.limit);
     
@@ -16,57 +50,44 @@ export async function getProductsNewReleases(req, res){
         }
         const products= await db.products.find(query,options).toArray();
 
-        // for (const prod of products){
-        //     prod.releaseDate
-        // }
+        for (const prod of products){
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
+            const category=await db.categories.findOne({_id:new ObjectId(prod._idCategory)});
+            prod.category=category.category;
+            delete prod._idCategory;
+            const subCategoryArray=[];            
+            for (const id of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(id)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
 
         return res.status(200).send(products);
     }catch(error){
         console.error(error);
         return res.sendStatus(500);
     }
-
-
-
-    // try{
-    //     const allProducts = await db.products.find({}).toArray();
-    //     if (Object.keys(user).length===0) { 
-    //         if(limit && limit<=allProducts.length){
-    //             const products= await db.products.aggregate([{ $sample: { size: limit } }]).toArray();
-    //             return res.status(200).send(products);
-    //         }else{
-    //             return res.send(allProducts);
-    //         }
-    //     }else{
-    //         // for a while, that we are not setting user related products, it will be the same code;
-            
-    //         if(limit && limit<=allProducts.length) {
-    //             const products= await db.products.aggregate([{ $sample: { size: limit } }]).toArray();
-    //             return res.status(200).send(products);
-    //         }else{
-    //             return res.send(allProducts);
-    //         }
-    //     }
-        
-    // } catch(err) {
-    //     console.log(err);
-    //     res.sendStatus(500);
-    // }
 }
 
-export async function getProduct(_req, res) {
+export async function getProduct(req, res) {
     const product=res.locals.product;
     
     try{
-        if(_req.params.category===undefined){
+        if(req.params.category===undefined){
             const category=await db.categories.findOne({_id:new ObjectId(product._idCategory)});
             product.category=category.category;
         }else{
-            product.category=_req.params.category;
+            product.category=req.params.category;
         }
+        const dateArray=product.releaseDate.split('/');
+        const month= await getNameMonth(dateArray[1]);
+        product.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
         delete product._idCategory;
-        
-        
+
         const subCategoryArray=[];            
         for (const id of product._idSubCategory){
             const subcategory=await db.subcategories.findOne({_id: new ObjectId(id)});
@@ -82,7 +103,7 @@ export async function getProduct(_req, res) {
     }
 };
 
-export async function getCategory(_req, res) {
+export async function getCategory(req, res) {
     const _idCategory=res.locals._idCategory;
     try{
         const products=await db.products.find({_idCategory}).toArray();
@@ -92,7 +113,10 @@ export async function getCategory(_req, res) {
         
         for( const prod of products){
             delete prod._idCategory;
-            prod.category=_req.params.category;
+            prod.category=req.params.category;
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
             const subCategoryArray=[];            
             for (const sub of prod._idSubCategory){
                 const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
@@ -109,7 +133,7 @@ export async function getCategory(_req, res) {
     }
 }
 
-export async function getSubCategory(_req, res) {
+export async function getSubCategory(req, res) {
     const subCategory =res.locals.subCategory;
     const _idCategory=res.locals._idCategory;
     const _id=subCategory._id;
@@ -129,7 +153,10 @@ export async function getSubCategory(_req, res) {
 
         for( const prod of products){
             delete prod._idCategory;
-            prod.category=_req.params.category;
+            prod.category=req.params.category;
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
             const subCategoryArray=[];            
             for (const sub of prod._idSubCategory){
                 const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
