@@ -164,11 +164,7 @@ export async function verifyCategory(req, res, next) {
     try {
         const categoryExist = await db.categories.findOne({ category });
         if (!categoryExist) {
-
-            await db.categories.insertOne({ category });
-            const newCategory = await db.categories.findOne({ category });
-            res.locals._idCategory = newCategory._id;
-            return next();
+            return res.status(404).send(`${category} category doesn't exist!`)
         }
         res.locals._idCategory = categoryExist._id;
         return next();
@@ -187,10 +183,9 @@ export async function verifySubCategory(req, res, next) {
 
 
         for (const element of subcategory) {
-            const subCategoryExist = await db.subcategories.findOne({ subcategory: element });
+            const subCategoryExist = await db.subcategories.findOne({ subcategory: element, _idCategory  });
             if (!subCategoryExist) {
-                const { insertedId } = await db.subcategories.insertOne({ subcategory: element, _idCategory: _idCategory });
-                newSubCategoryArray.push(insertedId);
+                return res.status(404).send(`${element} subcategory doesen't exist `)
             } else {
                 newSubCategoryArray.push(subCategoryExist._id);
             }
