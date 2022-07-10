@@ -6,6 +6,7 @@ const cartSchema = joi.array().items(
         name: joi.string().required(),
         coverUrl: joi.string().required(),
         category: joi.string().valid('Movie', 'Video Game').required(),
+        subcategory: joi.string().required(),
         price: joi.number().required()
 }))
 
