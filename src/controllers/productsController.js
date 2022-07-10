@@ -186,3 +186,18 @@ export async function getSubCategory(req, res) {
         res.sendStatus(500);
     }
 }
+
+export async function getSubcategories(_,res){
+    const _idCategory=res.locals._idCategory
+    try{
+        const subcategoriesArray= await db.subcategories.find({_idCategory}).toArray();
+        const subcategoriesName=[];
+        for (const subcategory of subcategoriesArray){
+            subcategoriesName.push(subcategory.subcategory);
+        }
+        return res.status(200).send(subcategoriesName);
+    }catch(error){
+        console.error(error);
+        return res.status(500).send(error);
+    };
+}

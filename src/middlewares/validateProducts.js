@@ -63,3 +63,15 @@ export async function validateSubCategory(req,res,next){
     res.locals.subCategory=subCategoryExist;
     return next();
 }
+
+export async function validateSubCategories(req,res,next){
+    const {category}=req.headers;
+    if (!category) {
+        return res.status(422).send('Missing headers!');
+    }
+    const categoryExist= await db.categories.findOne({category});
+    if(!categoryExist) return res.status(404).send(`${category} category doesn't exist!`);
+
+    res.locals._idCategory=categoryExist._id;
+    return next();
+}
