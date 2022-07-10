@@ -18,8 +18,22 @@ export async function validateObjectId(req,res,next){
     return res.status(422).send('The parameter must be a valid _id/ObjectId!');
 }
 
+export async function validateNameProduct(req,res,next){
+    const name=req.params.productName;
+    const _idCategory=res.locals._idCategory;
+    const subCategory=res.locals.subCategory;
+
+        const product = await db.products.findOne({_idCategory, name, _idSubCategory:subCategory._id});
+            if(!product){
+                return res.status(400).send('There is no product with this id!');
+            }
+        res.locals.product=product;
+        return next();          
+}
+
 export async function validateCategory(req,res,next){
     const category=req.params.category;
+    
 
     if(category!== 'Movie' && category!=='Video Game'){
         return res.status(404).send(`${category} category doesn't exist! Try 'Movie' or 'Video Game'`);
