@@ -47,7 +47,7 @@ const productSubcategorySchema = joi.object({
 });
 
 const productCategorySchema = joi.object({
-    category: joi.string().required(),
+    category: joi.string().valid('Movie', 'Video Game').required(),
 });
 
 const productProducerSchema = joi.object({
