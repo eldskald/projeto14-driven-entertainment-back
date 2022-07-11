@@ -34,7 +34,6 @@ export async function validateNameProduct(req,res,next){
 export async function validateCategory(req,res,next){
     const category=req.params.category;
     
-
     if(category!== 'Movie' && category!=='Video Game'){
         return res.status(404).send(`${category} category doesn't exist! Try 'Movie' or 'Video Game'`);
     }

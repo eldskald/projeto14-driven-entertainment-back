@@ -137,10 +137,58 @@ export async function getProduct(req, res) {
     }
 };
 
-export async function getCategory(req, res) {
+export async function getCategoryNewReleases(req, res) {
+
+    let limit = parseInt(req.query.limit);
     const _idCategory=res.locals._idCategory;
+    
     try{
-        const products=await db.products.find({_idCategory}).toArray();
+        if(!limit) limit=(await db.products.find({_idCategory}).toArray()).length;
+        const query={_idCategory};
+        const options={
+            limit,
+            sort:{releaseDate:-1},
+        }
+        const products= await db.products.find(query,options).toArray();
+        if(products.length===0 || !products) {
+            return res.sendStatus(204);
+        }
+        
+        for( const prod of products){
+            delete prod._idCategory;
+            prod.category=req.params.category;
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
+            const subCategoryArray=[];            
+            for (const sub of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
+        
+        return res.status(200).send(products);
+    }catch(error){
+        console.error(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getCategoryTopRated(req, res) {
+
+    let limit = parseInt(req.query.limit);
+    const _idCategory=res.locals._idCategory;
+    
+    try{
+        if(!limit) limit=(await db.products.find({_idCategory}).toArray()).length;
+        const query={_idCategory};
+        const options={
+            limit,
+            sort:{rating:-1},
+        }
+        const products= await db.products.find(query,options).toArray();
         if(products.length===0 || !products) {
             return res.sendStatus(204);
         }
@@ -181,20 +229,68 @@ export async function getCategories(_,res){
     };
 };
 
-export async function getSubCategory(req, res) {
+export async function getSubCategoryNewReleases(req, res) {
     const subCategory =res.locals.subCategory;
     const _idCategory=res.locals._idCategory;
     const _id=subCategory._id;
     try{
-        const products=await db.products.find(
-            {
-                _idCategory,
-                _idSubCategory:
-                    {$elemMatch:
-                        { $eq:new ObjectId(_id)
-                        }
+        const query={
+            _idCategory,
+            _idSubCategory:
+                {$elemMatch:
+                    { $eq:new ObjectId(_id)
                     }
-            }).toArray();
+                }
+        };
+        const options={
+            sort:{releaseDate:-1},
+        }
+        const products=await db.products.find(query,options).toArray();
+
+        if(products.length===0 || !products){
+            return res.status(404).send(`${subCategory.subcategory} subcategory doesn't exist in this category!`);
+        }
+
+        for( const prod of products){
+            delete prod._idCategory;
+            prod.category=req.params.category;
+            const dateArray=prod.releaseDate.split('/');
+            const month= await getNameMonth(dateArray[1]);
+            prod.releaseDate=`${month} ${dateArray[2]}, ${dateArray[0]}`;
+            const subCategoryArray=[];            
+            for (const sub of prod._idSubCategory){
+                const subcategory=await db.subcategories.findOne({_id: new ObjectId(sub)});
+                subCategoryArray.push(subcategory.subcategory);
+            }
+            prod.subcategory=subCategoryArray;
+            delete prod._idSubCategory 
+        }
+
+        return res.status(200).send(products);
+    }catch(error){
+        console.error(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getSubCategoryTopRated(req, res) {
+    const subCategory =res.locals.subCategory;
+    const _idCategory=res.locals._idCategory;
+    const _id=subCategory._id;
+    try{
+        const query={
+            _idCategory,
+            _idSubCategory:
+                {$elemMatch:
+                    { $eq:new ObjectId(_id)
+                    }
+                }
+        };
+        const options={
+            sort:{rating:-1},
+        }
+        const products=await db.products.find(query,options).toArray();
+
         if(products.length===0 || !products){
             return res.status(404).send(`${subCategory.subcategory} subcategory doesn't exist in this category!`);
         }
