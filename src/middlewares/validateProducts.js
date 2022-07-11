@@ -55,7 +55,7 @@ export async function validateSubCategory(req,res,next){
     console.log('id da categoria que chega pelo locals: ', _idCategory);
     console.log('nome da subcategoria que chega pelo params', subcategory);
 
-    const subCategoryExist= await db.subcategories.findOne({subcategory}, _idCategory);
+    const subCategoryExist= await db.subcategories.findOne({subcategory, _idCategory});
     
 
     if(!subCategoryExist){
