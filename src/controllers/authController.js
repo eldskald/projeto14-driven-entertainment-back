@@ -59,5 +59,7 @@ export async function getSession(_req, res) {
     const user = res.locals.user;
     return res.status(200).send({
         username: user.name,
+        cart: user.cart,
+        library: user.library
     });
 }
