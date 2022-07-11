@@ -21,6 +21,8 @@ export async function login(_req, res) {
 
         return res.status(200).send({
             username: user.name,
+            cart: user.cart,
+            library: user.library,
             token
         });
 

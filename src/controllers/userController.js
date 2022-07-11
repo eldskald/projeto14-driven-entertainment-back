@@ -14,20 +14,6 @@ export function getLibrary(_req, res) {
     return res.status(200).send(library);
 }
 
-export function getCart(_req, res) {
-    const user = res.locals.user;
-    if (Object.keys(user).length === 0) {
-        return res.sendStatus(403);
-    }
-
-    const cart = user.cart;
-    if (!cart) {
-        return res.status(200).send([]);
-    }
-
-    return res.status(200).send(cart);
-}
-
 export async function updateCart(_req, res) {
     try {
         const user = res.locals.user;
