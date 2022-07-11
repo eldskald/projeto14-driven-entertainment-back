@@ -61,7 +61,7 @@ export async function checkout(_req, res) {
             return res.sendStatus(403);
         }
 
-        const cart = res.locals.cart;
+        const cart = user.cart;
         if (!user.library) {
             await db.users.updateOne(
                 {
