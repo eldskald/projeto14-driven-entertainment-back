@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { db } from "../db.js";
 
 export async function signupPoducts(req, res) {
@@ -42,19 +41,19 @@ export async function createCategory(req, res) {
 // Corpo tem que ser no formato:
 // {
 //     subcategory: <nome da categoria>
-//     _idCategory: <id da categoria a qual pertence>
+//     category: <nome da categoria a qual pertence>
 // }
 //
 export async function createSubcategory(req, res) {
     try {
-        const { subcategory, _idCategory } = req.body;
+        const { subcategory, category } = req.body;
 
-        const catObj = await db.categories.findOne({ _id: ObjectId(_idCategory) })
+        const catObj = await db.categories.findOne({ category })
         if (!catObj) {
             return res.sendStatus(404);
         }
 
-        await db.subcategories.insertOne({ subcategory, _idCategory });
+        await db.subcategories.insertOne({ subcategory, _idCategory: catObj._id });
         return res.sendStatus(201);
         
     } catch(err) {
