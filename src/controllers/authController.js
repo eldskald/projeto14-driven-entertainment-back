@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { db } from '../db.js';
+import { stripHtml } from "string-strip-html";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -32,6 +33,10 @@ export async function login(_req, res) {
 export async function signup(req, res) {
     try {
         const body = req.body;
+        for(const key of Object.keys(body) ){
+            body[key]=stripHtml(body[key]).result.trim();
+        };
+
         const passwordHash = await bcrypt.hash(body.password, 10);
         await db.users.insertOne({
             name: body.name,

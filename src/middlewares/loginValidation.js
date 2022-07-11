@@ -1,6 +1,7 @@
 import joi from 'joi';
 import bcrypt from 'bcrypt';
 import { db } from '../db.js';
+import { stripHtml } from "string-strip-html";
 
 const loginSchema = joi.object({
     email: joi.required(),
@@ -10,6 +11,12 @@ const loginSchema = joi.object({
 async function loginValidation(req, res, next) {
     try {
         const body = req.body;
+
+        for(const key of Object.keys(body) ){
+            body[key]= stripHtml(body[key]).result.trim();
+        };
+
+        
 
         const {error} = loginSchema.validate(body);
         if (error) {

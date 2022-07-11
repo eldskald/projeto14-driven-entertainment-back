@@ -1,5 +1,6 @@
 import joi from 'joi';
 import { db } from '../db.js';
+import { stripHtml } from "string-strip-html";
 
 const signupSchema = joi.object({
     name: joi.string().required().min(3),
@@ -10,6 +11,10 @@ const signupSchema = joi.object({
 async function signupValidation(req, res, next) {
     try {
         const body = req.body;
+
+        for(const key of Object.keys(body) ){
+            body[key]=stripHtml(body[key]).result.trim();
+        };
 
         const {error} = signupSchema.validate(req.body,{abortEarly:false});
         if (error) {
@@ -48,9 +53,11 @@ async function signupValidation(req, res, next) {
                 }
                 if(err.includes("/(?=.*?[0-9])/")){
                     return message+='Password must contain at least 1 number!\n';
-                }if(err.includes('/(?=.*?[#?!@$%^&*-])/')){
+                }
+                if(err.includes('/(?=.*?[#?!@$%^&*-])/')){
                     return message+='Password must contain at least 1 special character!\n';
-                }if(err.includes('"password" length must be at least 8 characters long')){
+                }
+                if(err.includes('"password" length must be at least 8 characters long')){
                     return message+='Password must contain at least 8 characters long\n';
                 }else{
                     return message+=err+'\n';
