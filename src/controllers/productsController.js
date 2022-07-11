@@ -233,6 +233,7 @@ export async function getSubCategoryNewReleases(req, res) {
     const subCategory =res.locals.subCategory;
     const _idCategory=res.locals._idCategory;
     const _id=subCategory._id;
+    
     try{
         const query={
             _idCategory,

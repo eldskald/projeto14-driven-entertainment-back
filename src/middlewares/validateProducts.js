@@ -45,12 +45,15 @@ export async function validateCategory(req,res,next){
     }
     
     res.locals._idCategory=categoryExist._id;
+    console.log('id da categoria no local: ', res.locals._idCategory);
     return next();
 }
 
 export async function validateSubCategory(req,res,next){
     const subcategory=req.params.subcategory;
     const _idCategory=res.locals._idCategory;
+    console.log('id da categoria que chega pelo locals: ', _idCategory);
+    console.log('nome da subcategoria que chega pelo params', subcategory);
 
     const subCategoryExist= await db.subcategories.findOne({subcategory}, _idCategory);
     
